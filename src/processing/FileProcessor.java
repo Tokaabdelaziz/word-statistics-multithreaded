@@ -1,37 +1,38 @@
 package processing;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.*;
 
 public class FileProcessor {
 
-    private final KeywordsCounter keywordsCounter = new KeywordsCounter();
-    private final WordAnalyzer analyzer = new WordAnalyzer();
+    private KeywordsCounter keywordCounter = new KeywordsCounter();
+    private WordAnalyzer wordAnalyzer = new WordAnalyzer();
 
-    public WordStatistics process(String filePath) throws IOException {
+    public WordStatistics process(Path filePath) {
 
-        WordStatistics stats = new WordStatistics(filePath);
+        WordStatistics stats = new WordStatistics(filePath.getFileName().toString());
 
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
 
-        String line;
-        while ((line = reader.readLine()) != null) {
+            String line;
 
-            String[] words = line.split("\\W+"); // split on non-letters
+            while ((line = reader.readLine()) != null) {
 
-            for (String w : words) {
-                if (w.isEmpty()) continue;
+                String[] words = line.split("\\W+"); // split by non-letters
 
-                stats.addWordCount(1);
+                for (String w : words) {
+                    if (w.isEmpty()) continue;
 
-                keywordsCounter.count(w, stats);
-                analyzer.analyze(w, stats);
+                    stats.wordCount++;
+                    keywordCounter.updateCounts(w, stats);
+                    wordAnalyzer.updateWordLengths(w, stats);
+                }
             }
+
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + filePath);
         }
 
-        reader.close();
         return stats;
     }
 }
-
