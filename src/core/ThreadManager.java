@@ -33,7 +33,7 @@ public class ThreadManager {
 
         List<String> filePaths = scanResult.getFilePaths();
         int fileCount = scanResult.getFileCount();
-        boolean searchedSubdirs = scanResult.hasSearchedSubdirectories();
+        boolean searchedSubdirs = scanResult.includedSubfolders();
 
         if (filePaths == null || filePaths.isEmpty()) {
             System.out.println("ThreadManager: No files to process.");
