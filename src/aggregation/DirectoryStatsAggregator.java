@@ -7,22 +7,29 @@ import java.util.List;
 
 public class DirectoryStatsAggregator {
     private StatsSynchronizer synchronizer;
-    private List<FileStatistics> allFileStats; 
+    private List<FileStatistics> allFileStats;
+    private final RealTimeUpdateModel model;
 
     public DirectoryStatsAggregator() {
         synchronizer = new StatsSynchronizer();
         allFileStats = new ArrayList<>();
+        model = new RealTimeUpdateModel();
     }
 
     // Process a single file statistics
     public void processFile(FileStatistics fileStats) {
         synchronizer.update(fileStats);
         allFileStats.add(fileStats);
+        model.updateStats(getFinalStats());  // Notify listeners of updated directory stats
     }
 
     // Get final directory statistics
     public DirectoryStatistics getFinalStats() {
         return synchronizer.getDirectoryStatistics();
+    }
+
+    public RealTimeUpdateModel getModel() {
+        return model;
     }
 
     // Export to summary.txt
@@ -66,12 +73,10 @@ public class DirectoryStatsAggregator {
         try (FileWriter writer = new FileWriter(filePath)) {
             // Header
             writer.write("File Name,Total Words,is,are,you,Longest Word,Shortest Word\n");
-            int index = 1;
             for (FileStatistics fs : allFileStats) {
-                writer.write("File" + index + "," + fs.getWordCount() + "," + fs.getIsCount() + ","
+                writer.write(fs.getFileName() + "," + fs.getWordCount() + "," + fs.getIsCount() + ","
                         + fs.getAreCount() + "," + fs.getYouCount() + "," + fs.getLongestWord() + ","
                         + fs.getShortestWord() + "\n");
-                index++;
             }
             System.out.println("file_statistics.csv created successfully.");
         } catch (IOException e) {
