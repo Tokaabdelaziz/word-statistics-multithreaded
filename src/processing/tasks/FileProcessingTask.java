@@ -19,6 +19,6 @@ public class FileProcessingTask implements Callable<WordStatistics> {
         return processor.process(file.toPath());
     }
 }
-}
+
 
 
