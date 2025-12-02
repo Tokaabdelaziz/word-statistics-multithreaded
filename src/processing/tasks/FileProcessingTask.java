@@ -1,32 +1,24 @@
 package processing.tasks;
 
-import processing.*;
+import processing.FileProcessor;
+import processing.WordStatistics;
 
-import java.nio.file.Path;
-import java.util.List;
+import java.io.File;
+import java.util.concurrent.Callable;
 
-public class FileProcessingTask implements Runnable {
+public class FileProcessingTask implements Callable<WordStatistics> {
+    private final File file;
 
-    private List<Path> files;
-    private UpdateDispatcher dispatcher; // Person 5 implements this
-
-    public FileProcessingTask(List<Path> files, UpdateDispatcher dispatcher) {
-        this.files = files;
-        this.dispatcher = dispatcher;
+    public FileProcessingTask(File file) {
+        this.file = file;
     }
 
     @Override
-    public void run() {
-
+    public WordStatistics call() {
         FileProcessor processor = new FileProcessor();
-
-        for (Path file : files) {
-
-            WordStatistics stats = processor.process(file);
-
-            dispatcher.sendUpdate(stats);
-        }
+        return processor.process(file.toPath());
     }
+}
 }
 
 
