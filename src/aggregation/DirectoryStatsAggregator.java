@@ -7,7 +7,7 @@ import java.util.List;
 
 public class DirectoryStatsAggregator {
     private StatsSynchronizer synchronizer;
-    private List<FileStatistics> allFileStats; // لتصدير CSV و JSON
+    private List<FileStatistics> allFileStats; 
 
     public DirectoryStatsAggregator() {
         synchronizer = new StatsSynchronizer();
