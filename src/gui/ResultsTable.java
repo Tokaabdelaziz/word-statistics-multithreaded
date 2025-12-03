@@ -1,12 +1,14 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.io.File;
 import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -37,6 +39,22 @@ public class ResultsTable extends JPanel {
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);
 
+        // ⬇️ NEW: render only file name, but keep full path in the model
+        DefaultTableCellRenderer fileNameRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public void setValue(Object value) {
+                if (value instanceof String) {
+                    String path = (String) value;
+                    String name = new File(path).getName(); // just "file.txt"
+                    super.setValue(name);
+                } else {
+                    super.setValue(value);
+                }
+            }
+        };
+        table.getColumnModel().getColumn(0).setCellRenderer(fileNameRenderer);
+        // ⬆️ NEW
+
         JScrollPane scrollPane = new JScrollPane(table);
 
         JPanel directorySummary = new JPanel(new BorderLayout(8, 0));
@@ -63,6 +81,38 @@ public class ResultsTable extends JPanel {
                 row.longestWord(),
                 row.shortestWord()
         });
+    }
+
+    public void addOrUpdateRow(ResultRow row) {
+        Objects.requireNonNull(row, "row");
+
+        // Check if file already exists in table (by full path)
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String existingFileName = (String) tableModel.getValueAt(i, 0);
+            if (existingFileName.equals(row.fileName())) {
+                // Update existing row
+                tableModel.setValueAt(row.wordCount(), i, 1);
+                tableModel.setValueAt(row.isCount(), i, 2);
+                tableModel.setValueAt(row.areCount(), i, 3);
+                tableModel.setValueAt(row.youCount(), i, 4);
+                tableModel.setValueAt(row.longestWord(), i, 5);
+                tableModel.setValueAt(row.shortestWord(), i, 6);
+                return;
+            }
+        }
+
+        // Add new row if not found
+        addResultRow(row);
+    }
+
+    public void removeRow(String fileName) {
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String existingFileName = (String) tableModel.getValueAt(i, 0);
+            if (existingFileName.equals(fileName)) {
+                tableModel.removeRow(i);
+                return;
+            }
+        }
     }
 
     public void updateDirectorySummary(String longest, String shortest) {

@@ -29,9 +29,12 @@ public class DirectoryStatistics {
             longestWord = fileStats.getLongestWord();
         }
 
-        // Update shortest word
-        if (shortestWord.isEmpty() || fileStats.getShortestWord().length() < shortestWord.length()) {
-            shortestWord = fileStats.getShortestWord();
+        // Update shortest word - only if the file's shortest word is not empty
+        String fileShortestWord = fileStats.getShortestWord();
+        if (fileShortestWord != null && !fileShortestWord.isEmpty()) {
+            if (shortestWord.isEmpty() || fileShortestWord.length() < shortestWord.length()) {
+                shortestWord = fileShortestWord;
+            }
         }
     }
 

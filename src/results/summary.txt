@@ -1,0 +1,8 @@
+Directory Summary
+-----------------
+Total Words: 6
+Total 'is': 0
+Total 'are': 1
+Total 'you': 0
+Longest Word: aaaaaaaaagdff
+Shortest Word: ar

@@ -16,8 +16,14 @@ public class FileProcessingTask implements Callable<WordStatistics> {
     @Override
     public WordStatistics call() {
         FileProcessor processor = new FileProcessor();
-        return processor.process(file.toPath());
+        WordStatistics stats = processor.process(file.toPath());
+
+        // Make sure we always use full path as identity
+        stats.fileName = file.getAbsolutePath();
+
+        return stats;
     }
+
 }
 
 
